@@ -435,7 +435,6 @@ Combat tuning constants (HP, mana regeneration, recognition thresholds, phase ti
 ### AI Assistance
 - **Code Assistance & Development Support:** Anthropic Claude, Google Gemini, and OpenAI ChatGPT
 
----
 
 ---
 
@@ -444,5 +443,4 @@ Combat tuning constants (HP, mana regeneration, recognition thresholds, phase ti
 **Nicholaus Ardian Nugraha**
 Informatics Engineering, Institut Teknologi Sepuluh Nopember (ITS)
 
-<!-- EDIT: add your GitHub / LinkedIn links -->
 GitHub: [@niko051207](https://github.com/niko051207)
