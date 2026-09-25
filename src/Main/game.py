@@ -10,48 +10,46 @@ from dollarpy import Point
 from fonts import load_font
 from hand_input import HandTracker, PinchState, StrokeBuilder, cam_rect, pinch_point
 from paths import user_data_path
-from settings import load_settings
+from settings import load_settings, pinch_scale
 from sounds import play as play_sfx, play_music, stop_music
 from spell_recognizer import setup_recognizer, spell_effect, spell_role_short
 from sprites import SpriteBank, flashed, tinted
 from ui_kit import UIKit, INK, CREAM, PARCHMENT, starfield
 
 # ---------------------------------------------------------------------------
-# Tuning (all speeds are per SECOND at a 600 px tall arena; they scale with the window)
+# Tuning
 # ---------------------------------------------------------------------------
-MIN_ACCURACY = 0.50        # best match must score at least this...
-MIN_MARGIN = 0.10          # ...and beat the next-best *different* spell by this much
-MIN_STROKE_POINTS = 10     # shorter strokes are treated as accidental pinches
-SIZE_MULT_RANGE = (0.7, 1.3)   # drawing bigger helps a little (was up to 2.5x)
+MIN_ACCURACY = 0.50
+MIN_MARGIN = 0.10
+MIN_STROKE_POINTS = 10
+SIZE_MULT_RANGE = (0.7, 1.3)
 
 PLAYER_MAX_HP = 500
 ENEMY_MAX_HP = 1000
 MANA_MAX = 100
-MANA_REGEN = 12.0          # mana per second
+MANA_REGEN = 12.0
 SHIELD_DURATION = 1.5
 FLINCH_DUR = 0.25
 COUNTDOWN = 3.0
-PLAYER_PROJ_SPEED = 1100   # px/s
+PLAYER_PROJ_SPEED = 1100
 PLAYER_HIT_RADIUS = 60
 VOLLEY_SPREAD_DEG = 6
 
 # Spell effects
-BURN_DURATION = 3.0        # "burn": extra damage over time after the hit...
-BURN_FRACTION = 0.4        # ...totalling 40% of the hit
+BURN_DURATION = 3.0
+BURN_FRACTION = 0.4
 BURN_TICK = 0.5
-STUN_DURATION = 1.4        # "interrupt": a charging enemy is stunned this long
-PARRY_WINDOW = 0.35        # Shield cast this close before impact reflects the shot
-REFLECT_MULT = 2           # reflected shots hit twice as hard
-COUNTER_SPEED = 600        # "counter": slower orb that destroys enemy shots it touches
+STUN_DURATION = 1.4
+PARRY_WINDOW = 0.35
+REFLECT_MULT = 2
+COUNTER_SPEED = 600
 COUNTER_RADIUS_MULT = 1.5
 
-# Enemy wards (phase II+): block everything except "interrupt" spells
+# Enemy wards
 WARD_DURATION = 3.0
 WARD_CHANCE = {1: 0.0, 2: 0.35, 3: 0.5}
 
-# Phase 1 (HP > 50%): slow and predictable
-# Phase 2 (HP 25-50%): faster, more aggressive, starts raising wards
-# Phase 3 (HP < 25%): rapid volleys, desperate
+# Enemy phases
 PHASE_PARAMS = {
     1: {"idle_dur": 2.5, "telegraph_dur": 1.2, "cooldown": 0.6, "attack": "heavy",
         "speed": 420, "dmg": 50, "radius": 18, "color": (255, 80, 80)},
@@ -61,9 +59,9 @@ PHASE_PARAMS = {
         "speed": 700, "dmg": 20, "radius": 12, "color": (255, 140, 30)},
 }
 
-# The enemy: the Dark Queen. Lines she says during the fight (one is picked at random).
+# Dark Queen dialog
 ENEMY_NAME = "DARK QUEEN"
-TAUNT_DUR = 1.1            # seconds she gloats (enemy_taunt) after hitting you
+TAUNT_DUR = 1.1
 DIALOG_LIFE = 2.6
 QUEEN_LINES = {
     "start":   ["Another hedge-wizard? How quaint.", "Kneel, and I may let you keep your hands.",
@@ -78,9 +76,9 @@ QUEEN_LINES = {
     "lose":    ["This... isn't... over...", "Impossible..."],
 }
 
-# Sprite sizes (at a 600 px tall arena) when drawn from assets/sprites/
+# Sprite sizes
 PLAYER_SPRITE_H = 150
-PROJ_SPRITE_SCALE = 2.6    # projectile sprite size (longest side) = radius * this
+PROJ_SPRITE_SCALE = 2.6
 
 GOLD = (255, 215, 0)
 WHITE = (255, 255, 255)
@@ -120,7 +118,7 @@ def _slug(name):
 
 
 # ---------------------------------------------------------------------------
-# Layout: everything positioned relative to the letterboxed camera arena
+# Layout
 # ---------------------------------------------------------------------------
 class Layout:
     def __init__(self, arena, orb=(0.1, 0.06)):
@@ -132,29 +130,28 @@ class Layout:
         )
         self.enemy_center = self.enemy_rect.center
         r = self.enemy_rect
-        self.staff_orb = (r.x + int(r.w * orb[0]), r.y + int(r.h * orb[1]))   # enemy spells come from here
+        self.staff_orb = (r.x + int(r.w * orb[0]), r.y + int(r.h * orb[1]))
         self.player_pos = (arena.x + int(arena.w * 0.25), arena.y + int(arena.h * 0.70))
 
 
 # ---------------------------------------------------------------------------
-# Combat state (a rematch is just a new Combat())
+# Combat state
 # ---------------------------------------------------------------------------
 class Combat:
     def __init__(self, spell_data=None):
         spell_data = spell_data or {}
-        # the enemy only raises wards if the player owns a spell that can break them
         self.interrupt_spell = next(
             (n for n, e in spell_data.items() if spell_effect(n, e) == "interrupt"), None)
 
         self.enemy_hp = ENEMY_MAX_HP
         self.player_hp = PLAYER_MAX_HP
         self.mana = float(MANA_MAX)
-        self.ai_state = "idle"         # idle -> telegraphing -> cooldown (or stunned)
+        self.ai_state = "idle"
         self.ai_timer = 0.0
         self.flinch = 0.0
         self.player_flinch = 0.0
-        self.since_cast = 99.0         # seconds since the player's last successful cast (sprite anim)
-        self.over_t = 0.0              # seconds since the fight ended (death anims)
+        self.since_cast = 99.0
+        self.over_t = 0.0
         self.shield = 0.0
         self.ward = 0.0
         self.ward_hint_shown = False
@@ -164,8 +161,8 @@ class Combat:
         self.waiting_for_hand = True
         self.countdown = COUNTDOWN
         self.fight_time = 0.0
-        self.t = 0.0                   # animation clock
-        self.result = None             # "WIN" / "LOSE"
+        self.t = 0.0
+        self.result = None
         self.new_best = False
         self.casts = 0
         self.acc_sum = 0.0
@@ -184,8 +181,9 @@ class Combat:
         self.flash_alpha = 0.0
         self.shake_time = 0.0
         self.shake_mag = 0.0
-        self.taunt = 0.0               # enemy gloating after a hit
-        self.dialog = None             # {"text", "life", "max"} while the enemy is talking
+        self.shake_on = load_settings()["screen_shake"]
+        self.taunt = 0.0
+        self.dialog = None
         self.last_phase = 1
         self.low_hp_said = False
 
@@ -203,7 +201,6 @@ class Combat:
         return 1 if pct > 0.5 else 2 if pct > 0.25 else 3
 
     def say(self, key, chance=1.0, interrupt=True):
-        """The enemy says a random line from QUEEN_LINES[key]."""
         if random.random() > chance or (self.dialog and not interrupt):
             return
         lines = QUEEN_LINES.get(key)
@@ -226,6 +223,8 @@ class Combat:
                                    "color": color, "life": random.uniform(0.6, 1.0) * life})
 
     def add_shake(self, duration, magnitude):
+        if not self.shake_on:
+            return
         current = self.shake_mag if self.shake_time > 0 else 0.0
         self.shake_time = max(self.shake_time, duration)
         self.shake_mag = max(current, magnitude)
@@ -240,10 +239,10 @@ class Combat:
     # -- casting --
     def cast(self, points, cast_time, recognizer, spell_data, L):
         if len(points) < MIN_STROKE_POINTS:
-            return  # accidental tap-pinch: ignore quietly
+            return
         if recognizer is None:
             play_sfx("fail", volume=0.6)
-            self.show_toast("No spells recorded", "Run record_spells.py to add some", FAIL, 3.0)
+            self.show_toast("No spells recorded", "Add some in the SPELLBOOK", FAIL, 3.0)
             return
 
         name, score, runner_up = recognizer.recognize_ranked([Point(x, y) for x, y in points])
@@ -289,7 +288,6 @@ class Combat:
         self.show_toast(name, f"{pct}% match · {size_mult:.2f}x size · {dmg} dmg", GOLD)
 
         if effect == "interrupt":
-            # instant: a lightning bolt from the end of the stroke to the enemy
             self.bolts.append({"pts": self._bolt_path((sx, sy), L.enemy_center, L.scale),
                                "color": color, "life": 0.22})
             self._hit_enemy(dmg, color, "interrupt", L)
@@ -391,7 +389,7 @@ class Combat:
         self.burn_time -= dt
         self.burn_acc += dt
         r = L.enemy_rect
-        if random.random() < 25 * dt:   # rising embers
+        if random.random() < 25 * dt:
             self.particles.append({"x": random.uniform(r.left, r.right), "y": random.uniform(r.centery, r.bottom),
                                    "vx": random.uniform(-15, 15), "vy": -random.uniform(60, 130) * L.scale,
                                    "radius": random.randint(2, 4), "color": EMBER, "life": 0.6})
@@ -447,7 +445,7 @@ class Combat:
             shot["trail"].append((shot["x"], shot["y"]))
             del shot["trail"][:-8]
 
-            if shot.get("effect") == "counter":     # eat enemy shots on the way
+            if shot.get("effect") == "counter":
                 for ep in self.enemy_shots[:]:
                     if math.hypot(ep["x"] - shot["x"], ep["y"] - shot["y"]) < shot["radius"] + ep["radius"] * L.scale:
                         self.enemy_shots.remove(ep)
@@ -472,7 +470,7 @@ class Combat:
             if "vx" in ep:
                 ep["x"] += ep["vx"] * step
                 ep["y"] += ep["vy"] * step
-            else:  # heavy shot homes in on the player
+            else:
                 dx, dy = px - ep["x"], py - ep["y"]
                 dist = math.hypot(dx, dy)
                 if dist > 0:
@@ -484,7 +482,6 @@ class Combat:
                 if self.over:
                     continue
                 if self.shield > 0 and self.shield >= SHIELD_DURATION - PARRY_WINDOW:
-                    # perfect timing: send it back
                     self.parries += 1
                     self.say("parried", 0.6)
                     play_sfx("shield_block", volume=0.9)
@@ -569,7 +566,7 @@ class Combat:
         self.ward = 0.0
         stop_music()
         self.say("lose" if result == "WIN" else "win")
-        self.dialog["life"] = self.dialog["max"] = 99.0      # stays up on the end screen
+        self.dialog["life"] = self.dialog["max"] = 99.0
         if result == "WIN":
             play_sfx("victory", volume=0.9)
             best = load_best_time()
@@ -611,8 +608,6 @@ def _backdrop(size):
 
 
 def _wait_for_camera(screen, tracker, clock, fonts):
-    """Loading screen until the first camera frame arrives. Returns None when ready,
-    or "MENU"/"QUIT" if the player leaves or the camera fails."""
     t0 = time.monotonic()
     while not tracker.ready.is_set():
         for event in pygame.event.get():
@@ -658,21 +653,20 @@ class Renderer:
         self.f = fonts
         self.sprites = SpriteBank()
         self.kit = UIKit()
-        self.enemy_box = None       # (left, top, right, bottom) of the drawn enemy, for the speech bubble
-        self.hud_right = 0          # right edge of the player HUD panel
-        self._trail = {"enemy": 1.0, "player": 1.0}   # lagging HP shown as a pale bar segment
+        self.enemy_box = None
+        self.hud_right = 0
+        self._trail = {"enemy": 1.0, "player": 1.0}
         self._glow_cache = {}
         self._tint_cache = {}
         self._size = None
         self.dim = None
         self.flash = None
         self.fx = None
-        self.bar_right = 0          # right edge of the spell list, so toasts can avoid it
+        self.bar_right = 0
         self.spells = [(n, e.get("cost", 25), tuple(e.get("color", (200, 200, 200))), spell_role_short(n, e))
                        for n, e in spell_data.items()]
 
     def enemy_orb(self):
-        """Where enemy shots spawn, as fractions of the enemy hitbox (tunable in sprites.json)."""
         orb = self.sprites.opts("enemy").get("orb")
         if self.sprites.has("enemy_idle") and isinstance(orb, (list, tuple)) and len(orb) == 2:
             return tuple(orb)
@@ -685,7 +679,7 @@ class Renderer:
         self._size = key
         self.dim = pygame.Surface(arena.size)
         self.dim.fill((22, 8, 38))
-        self.dim.set_alpha(110)         # darken + tint the webcam purple so spells and UI stand out
+        self.dim.set_alpha(110)
         self.flash = pygame.Surface(screen.get_size())
         self.fx = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
 
@@ -707,7 +701,6 @@ class Renderer:
 
     # -- sprite helpers --
     def _char_frame(self, name, t, height, flash=0.0, burn=0.0):
-        """A character sprite frame, scaled, with optional hit flash / burn glow."""
         anim = self.sprites.get(name)
         if anim is None:
             return None
@@ -723,7 +716,6 @@ class Renderer:
         screen.blit(img, (int(anchor_x - img.get_width() / 2), int(bottom_y - img.get_height())))
 
     def _proj_frame(self, names, t, size, color, angle_deg, spin=0.0):
-        """Projectile sprite frame: first sprite found in names, tinted/rotated per sprites.json."""
         for name in names:
             anim = self.sprites.get(name, fallback=False)
             if anim is not None:
@@ -732,7 +724,7 @@ class Renderer:
             return None
         o = self.sprites.opts(name)
         fw, fh = anim.frames[0].get_size()
-        height = max(2, int(size * fh / max(fw, fh)))    # longest side = size
+        height = max(2, int(size * fh / max(fw, fh)))
         img = anim.frame(t, height)
         if o.get("tint", name == "proj_player"):
             key = (name, anim.index(t), int(height), color)
@@ -751,7 +743,7 @@ class Renderer:
         a, s = L.arena, L.scale
         self._ensure_surfaces(screen, a)
 
-        # ---- world (this part shakes) ----
+        # ---- world ----
         screen.fill(BG)
         if cam is not None:
             screen.blit(cam, a.topleft)
@@ -761,7 +753,7 @@ class Renderer:
         self._draw_enemy(screen, c, L)
         self._draw_player(screen, c, L)
         self._draw_shots(screen, c, L)
-        for t in c.texts:     # dark shadow keeps combat text readable on any background
+        for t in c.texts:
             surf = self.f["dmg"].render(t["text"], True, t["color"])
             shadow = self.f["dmg"].render(t["text"], True, (10, 8, 20))
             x = t["x"] - surf.get_width() // 2
@@ -775,7 +767,7 @@ class Renderer:
             screen.fill(BG)
             screen.blit(world, offset)
 
-        # ---- overlay (steady) ----
+        # ---- overlay ----
         if len(stroke.points) > 1:
             self.fx.fill((0, 0, 0, 0))
             pygame.draw.lines(self.fx, (255, 190, 40, 90), False, stroke.points, max(8, int(16 * s)))
@@ -872,8 +864,6 @@ class Renderer:
                 pygame.draw.circle(screen, (30, 0, 0), pos, max(3, r // 2))
 
     def _draw_enemy(self, screen, c, L):
-        """The enemy wizard: a sprite from assets/sprites if present, else drawn from shapes.
-        The rect is the hitbox either way."""
         r, s = L.enemy_rect, L.scale
         h = r.h
         stunned = c.ai_state == "stunned" and c.fighting
@@ -887,7 +877,7 @@ class Renderer:
         else:
             self._draw_enemy_shapes(screen, c, L, stunned, charging, phase)
 
-        # ward: a slowly turning hexagon
+        # ward
         if c.ward > 0:
             R = int(h * 0.62)
             surf = pygame.Surface((R * 2 + 8, R * 2 + 8), pygame.SRCALPHA)
@@ -898,7 +888,7 @@ class Renderer:
             pygame.draw.polygon(surf, (*WARD_VIOLET, int(220 * fade)), pts, max(2, int(3 * s)))
             screen.blit(surf, (r.centerx - R - 4, r.centery - R - 4))
 
-        # state tag under the enemy (the HP bar lives in the HUD, top-right)
+        # state tag
         tag = None
         if charging:
             tag = ("!! CHARGING !!", (255, 200, 0))
@@ -919,7 +909,7 @@ class Renderer:
         bob = 0 if (stunned or c.over) else math.sin(c.t * 2.2) * 4 * s
         cx = r.centerx + off[0] * s
         bottom = r.bottom + bob + off[1] * s
-        if c.flinch > 0:        # recoil shake when hit
+        if c.flinch > 0:
             cx += random.uniform(-1, 1) * 6 * s * c.flinch / FLINCH_DUR
 
         if c.result == "WIN":
@@ -935,11 +925,11 @@ class Renderer:
         elif c.dialog and c.fighting:
             name, t = "enemy_talk", c.t
         elif phase == 3 and c.fighting:
-            name, t = "enemy_charge", c.t      # desperate: stays furious in phase III
+            name, t = "enemy_charge", c.t
         else:
             name, t = "enemy_idle", c.t
 
-        # aura behind the sprite: a soft violet haze, flaring in the attack colour while charging
+        # aura
         if charging:
             prog = min(1.0, c.ai_timer / PHASE_PARAMS[phase]["telegraph_dur"])
             self._blit_glow(screen, (cx, bottom - height * 0.45), r.w * (0.45 + 0.2 * prog),
@@ -954,7 +944,7 @@ class Renderer:
         self._blit_char(screen, img, cx, bottom)
         self._enemy_half_w = img.get_width() // 2
 
-        # keep the attack readable: a charging orb where shots spawn
+        # charging orb
         if charging:
             prog = min(1.0, c.ai_timer / PHASE_PARAMS[phase]["telegraph_dur"])
             orb_r = r.w * 0.07 * (1 + 1.3 * prog + 0.15 * math.sin(c.t * 30))
@@ -962,7 +952,7 @@ class Renderer:
             self._blit_glow(screen, L.staff_orb, orb_r * 1.3, col, 70)
             pygame.draw.circle(screen, col, L.staff_orb, max(3, int(orb_r)))
         if stunned and not self.sprites.has("enemy_stunned"):
-            for k in range(3):   # dizzy stars
+            for k in range(3):
                 ang = c.t * 5 + k * math.tau / 3
                 sx = cx + math.cos(ang) * r.w * 0.3
                 sy = bottom - height * 1.02 + math.sin(ang) * r.h * 0.05
@@ -970,7 +960,6 @@ class Renderer:
         return bottom - img.get_height()
 
     def _draw_enemy_shapes(self, screen, c, L, stunned, charging, phase):
-        """A hooded wizard drawn from shapes (used when there's no enemy sprite)."""
         r, s = L.enemy_rect, L.scale
         w, h = r.w, r.h
         bob = 0 if stunned else math.sin(c.t * 2.2) * 4 * s
@@ -984,7 +973,7 @@ class Renderer:
         hood = _lerp(robe, (0, 0, 0), 0.35)
         trim = (205, 165, 70)
 
-        # aura while charging / in phase III
+        # aura
         if charging:
             prog = min(1.0, c.ai_timer / PHASE_PARAMS[phase]["telegraph_dur"])
             self._blit_glow(screen, (cx, top + h * 0.55), w * (0.45 + 0.2 * prog), PHASE_PARAMS[phase]["color"], 35)
@@ -1027,13 +1016,13 @@ class Renderer:
         pygame.draw.circle(screen, hood, (int(head[0]), int(head[1])), int(w * 0.21))
         pygame.draw.ellipse(screen, (8, 4, 14), (cx - w * 0.14, top + h * 0.2, w * 0.26, h * 0.16))
         eye_y = top + h * 0.28
-        eyes = [(cx - w * 0.075, eye_y), (cx + w * 0.02, eye_y)]   # looking toward the player
+        eyes = [(cx - w * 0.075, eye_y), (cx + w * 0.02, eye_y)]
         if stunned:
             for ex, ey in eyes:
                 d = max(2, int(w * 0.022))
                 pygame.draw.line(screen, (200, 200, 210), (ex - d, ey - d), (ex + d, ey + d), 2)
                 pygame.draw.line(screen, (200, 200, 210), (ex - d, ey + d), (ex + d, ey - d), 2)
-            for k in range(3):   # dizzy stars
+            for k in range(3):
                 ang = c.t * 5 + k * math.tau / 3
                 sx = head[0] + math.cos(ang) * w * 0.3
                 sy = top - h * 0.02 + math.sin(ang) * h * 0.05
@@ -1061,10 +1050,8 @@ class Renderer:
             else:
                 name, t = "player_idle", c.t
             img = self._char_frame(name, t, height, flash=c.player_flinch / FLINCH_DUR)
-            # the sprite's middle sits on player_pos, where enemy shots aim
             self._blit_char(screen, img, px + off[0] * s, py + height / 2 + off[1] * s)
         elif self.kit.raw("hat_purple") is not None:
-            # your wizard's hat floats where enemy shots aim
             hat = self.kit.image("hat_purple", max(2, self.kit.px_for(s, 3)))
             if c.player_flinch > 0:
                 hat = flashed(hat, 0.8 * c.player_flinch / FLINCH_DUR)
@@ -1072,7 +1059,6 @@ class Renderer:
             self._blit_glow(screen, (px, py + 4 * s), hat.get_width() * 0.45, (170, 110, 255), 30)
             screen.blit(hat, hat.get_rect(center=(px, int(py + bob))))
         else:
-            # a visible target, so enemy shots fly at something
             r = int(28 * s)
             pygame.draw.circle(screen, (255, 215, 0), (px, py), r, 2)
             pygame.draw.circle(screen, (255, 215, 0), (px, py), max(3, r // 5))
@@ -1088,11 +1074,9 @@ class Renderer:
 
     # -- HUD --
     def _px(self, L):
-        """Screen pixels per UI-kit pixel (2 at a 600 px tall arena)."""
         return self.kit.px_for(L.scale)
 
     def _update_trails(self, c):
-        """Pale 'recent damage' segment on the HP bars that drains after a hit."""
         dt = min(0.1, max(0.0, c.t - getattr(self, "_trail_t", c.t)))
         self._trail_t = c.t
         for key, pct in (("enemy", c.enemy_hp / ENEMY_MAX_HP), ("player", c.player_hp / PLAYER_MAX_HP)):
@@ -1107,7 +1091,6 @@ class Renderer:
         pygame.draw.polygon(screen, INK, pts, max(1, r // 3))
 
     def _draw_spell_bar(self, screen, c, L):
-        """Your spells, what they do, and whether you can afford them right now."""
         a = L.arena
         self.bar_right = a.x
         self.bar_bottom = a.y
@@ -1180,7 +1163,6 @@ class Renderer:
         screen.blit(self.kit.bar(bar_w, mana_h, c.mana / MANA_MAX, MANA_BLUE, px), (x, y))
 
     def _mini_portrait(self, size):
-        """The enemy's face, cropped from enemy_idle, for the boss bar."""
         key = ("mini", size)
         if key not in self._tint_cache:
             anim = self.sprites.get("enemy_idle")
@@ -1193,7 +1175,6 @@ class Renderer:
         return self._tint_cache[key]
 
     def _draw_boss_bar(self, screen, c, L):
-        """Enemy name, portrait, phase pips and HP, top-right."""
         a, s = L.arena, L.scale
         px = self._px(L)
         f = self.f["small"]
@@ -1226,7 +1207,7 @@ class Renderer:
         y = y0 + (panel.get_height() - col_h) // 2
         screen.blit(self.kit.text(f, ENEMY_NAME, CREAM), (x, y))
         pip_r = max(3, int(5 * s))
-        for k in range(3):     # phase pips: filled up to the current phase
+        for k in range(3):
             col = [(180, 255, 180), (255, 200, 60), (255, 80, 80)][k] if k < phase else (70, 50, 85)
             self._diamond(screen, col, (x + bar_w - pip_r - (2 - k) * (pip_r * 3), y + lh // 2), pip_r)
         y += lh + 2
@@ -1235,7 +1216,6 @@ class Renderer:
         screen.blit(self.kit.bar(bar_w, bar_h, pct, col, px, self._trail["enemy"]), (x, y))
 
     def _draw_dialog(self, screen, c, L):
-        """The enemy's speech bubble, beside her face."""
         d = c.dialog
         if not d or not self.enemy_box or c.waiting_for_hand:
             return
@@ -1289,12 +1269,12 @@ class Renderer:
             box.blit(sub, (box.get_width() // 2 - sub.get_width() // 2, y + title.get_height() + 2))
         box.set_alpha(alpha)
         a = L.arena
-        lo = self.bar_right + 10                      # never cover the spell list...
-        hi = getattr(self, "boss_left", a.right) - 10  # ...or the enemy's HP
+        lo = self.bar_right + 10
+        hi = getattr(self, "boss_left", a.right) - 10
         bw = box.get_width()
         if hi - lo >= bw:
             x, y = min(max(a.centerx - bw // 2, lo), hi - bw), a.y + 14
-        else:                                          # no room up top: bottom middle, above the hint line
+        else:
             lo = self.hud_right + 10
             x = min(max(a.centerx - bw // 2, lo), a.right - 10 - bw)
             y = a.bottom - 44 - box.get_height()
@@ -1309,9 +1289,9 @@ class Renderer:
             text, color = "Pinch thumb + index finger, draw a spell, release to cast  ·  P to pause", SOFT
         a = L.arena
         surf = self.kit.text(self.f["small"], text, color)
-        if self.hud_right + 16 + surf.get_width() > a.right - 8:     # narrow window: smaller text
+        if self.hud_right + 16 + surf.get_width() > a.right - 8:
             surf = self.kit.text(self.f["tiny"], text, color)
-        if self.hud_right + 16 + surf.get_width() > a.right - 8:     # still too wide: drop the pause hint
+        if self.hud_right + 16 + surf.get_width() > a.right - 8:
             surf = self.kit.text(self.f["tiny"], text.split("  ·  ")[0], color)
         x = max(self.hud_right + 16, a.centerx - surf.get_width() // 2)
         screen.blit(surf, (x, a.bottom - 32))
@@ -1322,7 +1302,6 @@ class Renderer:
         screen.blit(shade, a.topleft)
 
     def _hints(self, screen, items, cx, y, px):
-        """A row of key hints: [(ui button image, key, label), ...] centred on cx."""
         f = self.f["small"]
         parts = []
         for icon, key, label in items:
@@ -1392,7 +1371,7 @@ class Renderer:
             for sx in (r.centerx - title.get_width() // 2 - skull.get_width() - 14, r.centerx + title.get_width() // 2 + 14):
                 screen.blit(skull, (sx, ty + (title.get_height() - skull.get_height()) // 2))
 
-        # the queen's reaction, framed, with her last words
+        # queen reaction
         y = ty + title.get_height() + int(10 * s)
         x = r.x + int(28 * s)
         anim = self.sprites.get("enemy_dead" if win else "enemy_taunt")
@@ -1448,7 +1427,8 @@ def run_game(screen):
     }
     clock = pygame.time.Clock()
     recognizer, spell_data = setup_recognizer()
-    tracker = HandTracker(camera_index=load_settings()["camera_index"])
+    settings = load_settings()
+    tracker = HandTracker(camera_index=settings["camera_index"])
 
     try:
         leave = _wait_for_camera(screen, tracker, clock, fonts)
@@ -1456,10 +1436,10 @@ def run_game(screen):
             return leave
 
         combat = Combat(spell_data)
-        pinch = PinchState()
+        pinch = PinchState(sensitivity=pinch_scale(settings))
         stroke = StrokeBuilder()
         renderer = Renderer(fonts, spell_data)
-        show_fps = False
+        show_fps = settings["show_fps"]
         paused = False
         layout = None
         last_id, last_t = None, None
@@ -1469,7 +1449,7 @@ def run_game(screen):
         play_music("battle_theme", volume=0.35)
 
         while True:
-            dt = min(clock.tick(60) / 1000.0, 0.05)   # clamp hitches so nothing teleports
+            dt = min(clock.tick(60) / 1000.0, 0.05)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return "QUIT"
@@ -1494,7 +1474,7 @@ def run_game(screen):
             screen = pygame.display.get_surface()
             win_w, win_h = screen.get_size()
 
-            # --- newest camera frame (never blocks) ---
+            # --- camera frame ---
             frame = tracker.latest()
             new_frame = frame is not None and frame[0] != last_id
             cam_dt = 1 / 30
@@ -1509,7 +1489,7 @@ def run_game(screen):
                 continue
             arena = cam_rect(win_w, win_h, *cam_src.get_size())
             if layout is None or layout.arena != arena:
-                if layout is not None:          # window resized: in-flight things would be misplaced
+                if layout is not None:
                     combat.clear_in_flight()
                     stroke.cancel()
                 layout = Layout(arena, renderer.enemy_orb())
@@ -1517,7 +1497,7 @@ def run_game(screen):
             if new_frame or cam_scaled is None:
                 cam_scaled = pygame.transform.scale(cam_src, arena.size)
 
-            # --- hand input (once per camera frame) ---
+            # --- hand input ---
             if new_frame:
                 hand_visible = lm is not None
                 aspect = cam_src.get_width() / cam_src.get_height()

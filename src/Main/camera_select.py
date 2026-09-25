@@ -1,11 +1,3 @@
-"""
-CAMERA screen: lists every connected webcam, shows a live preview with hand
-tracking so the player can see which camera actually sees their hand, and
-saves the choice to settings.json.
-
-Controls: click a camera (or Up/Down) to preview it, ENTER / "Use this camera"
-to save, R to rescan, ESC to go back without changing anything.
-"""
 import threading
 
 import pygame
@@ -24,7 +16,6 @@ FAIL = (235, 120, 110)
 BG = (15, 15, 30)
 PANEL = (30, 30, 50)
 
-# MediaPipe hand skeleton (pairs of landmark indices)
 HAND_CONNECTIONS = [
     (0, 1), (1, 2), (2, 3), (3, 4), (0, 5), (5, 6), (6, 7), (7, 8),
     (5, 9), (9, 10), (10, 11), (11, 12), (9, 13), (13, 14), (14, 15), (15, 16),
@@ -33,7 +24,6 @@ HAND_CONNECTIONS = [
 
 
 class _Scan:
-    """Runs hand_input.list_cameras() on a thread so the window stays responsive."""
 
     def __init__(self):
         self.result = None
@@ -50,7 +40,6 @@ class _Scan:
 
 
 def _fit_text(font, text, color, max_w):
-    """Render text, trimming with '...' so it never spills out of its box."""
     surf = font.render(text, True, color)
     if surf.get_width() <= max_w:
         return surf
@@ -78,8 +67,8 @@ def run_camera_select(screen):
     saved_index = settings["camera_index"]
 
     scan = _Scan()
-    cameras = []          # [(index, name)]
-    selected = 0          # position in `cameras`
+    cameras = []          
+    selected = 0         
     tracker = None
     last_id = None
     cam_src = cam_rgb = None
@@ -90,7 +79,7 @@ def run_camera_select(screen):
         """Switch the live preview to cameras[pos]."""
         nonlocal tracker, selected, last_id, cam_src, cam_rgb, lm
         if tracker is not None:
-            tracker.stop(wait=False)     # different camera: no need to wait for release
+            tracker.stop(wait=False)     
         selected = pos
         last_id, cam_src, cam_rgb, lm = None, None, None, None
         tracker = HandTracker(camera_index=cameras[pos][0])
@@ -98,14 +87,14 @@ def run_camera_select(screen):
     def rescan():
         nonlocal scan, tracker, cameras, cam_src, cam_rgb, lm
         if tracker is not None:
-            tracker.stop(wait=True)      # release the camera so the scan can open it
+            tracker.stop(wait=True)      
             tracker = None
         cameras, cam_src, cam_rgb, lm = [], None, None, None
         scan = _Scan()
 
     def confirm():
         if not cameras or (tracker is not None and tracker.error):
-            return False    # don't save a camera that can't be opened
+            return False    
         idx, name = cameras[selected]
         save_settings({"camera_index": idx, "camera_name": name})
         return True
@@ -122,8 +111,7 @@ def run_camera_select(screen):
             preview_box = pygame.Rect(list_x + list_w + 24, top, W - (list_x + list_w + 24) - 30, H - top - 120)
             btn_use = pygame.Rect(W - 30 - 230, H - 70, 230, 48)
             btn_back = pygame.Rect(30, H - 70, 150, 48)
-            btn_rescan = pygame.Rect(list_x, top, list_w, 40)   # moved below the list when drawn
-
+            btn_rescan = pygame.Rect(list_x, top, list_w, 40)   
             # --- scan finished? ---
             if scan is not None and scan.done.is_set():
                 cameras = scan.result or []
@@ -237,4 +225,4 @@ def run_camera_select(screen):
             clock.tick(60)
     finally:
         if tracker is not None:
-            tracker.stop(wait=True)   # the game may open this camera right after
+            tracker.stop(wait=True)   

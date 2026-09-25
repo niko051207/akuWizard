@@ -1,9 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
-# Build with:  pyinstaller main.spec
 from PyInstaller.utils.hooks import collect_data_files
 
 datas = [('hand_landmarker.task', '.'), ('spells.json', '.'), ('assets', 'assets')]
-datas += collect_data_files('mediapipe')   # mediapipe ships model/graph files it loads at runtime
+datas += collect_data_files('mediapipe')
 
 a = Analysis(
     ['main.py'],
@@ -26,14 +25,14 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='WarOfWizards',
+    name='akuWizard',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=False,          # set to True while debugging a build to see print() output
+    console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,

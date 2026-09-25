@@ -3,13 +3,40 @@ import pygame
 
 from paths import resource_path
 
+# ---------------------------------------------------------------------------
+# Paths
+# ---------------------------------------------------------------------------
 SFX_DIR = resource_path("assets", "sfx")
 MUSIC_DIR = resource_path("assets", "music")
 
 _cache = {}
 _warned = set()
 
+_vol = {"master": 1.0, "music": 1.0, "sfx": 1.0}
+_music_base = 0.4
 
+
+# ---------------------------------------------------------------------------
+# Volume
+# ---------------------------------------------------------------------------
+def configure(settings):
+    set_volumes(settings.get("master_volume"), settings.get("music_volume"), settings.get("sfx_volume"))
+
+
+def set_volumes(master=None, music=None, sfx=None):
+    for key, val in (("master", master), ("music", music), ("sfx", sfx)):
+        if val is not None:
+            _vol[key] = max(0.0, min(1.0, float(val)))
+    try:
+        if _mixer_ready():
+            pygame.mixer.music.set_volume(_music_base * _vol["master"] * _vol["music"])
+    except pygame.error:
+        pass
+
+
+# ---------------------------------------------------------------------------
+# Playback
+# ---------------------------------------------------------------------------
 def _mixer_ready():
     try:
         return pygame.mixer.get_init() is not None
@@ -18,11 +45,6 @@ def _mixer_ready():
 
 
 def load_sound(name):
-    """
-    Load assets/sfx/<name>.(wav|ogg|mp3). Returns None if the file doesn't
-    exist yet, so calling code can safely play a missing sound as a no-op
-    instead of crashing while you're still collecting audio files.
-    """
     if name in _cache:
         return _cache[name]
     if not _mixer_ready():
@@ -47,15 +69,15 @@ def load_sound(name):
 
 
 def play(name, volume=1.0):
-    """Play a one-shot sound effect by name. Safe to call even if the file is missing."""
     snd = load_sound(name)
     if snd:
-        snd.set_volume(volume)
+        snd.set_volume(volume * _vol["master"] * _vol["sfx"])
         snd.play()
 
 
 def play_music(name, volume=0.4, loops=-1):
-    """Start a looping background music track by name. Safe no-op if missing."""
+    global _music_base
+    _music_base = volume
     if not _mixer_ready():
         return
     for ext in (".ogg", ".mp3", ".wav"):
@@ -63,7 +85,7 @@ def play_music(name, volume=0.4, loops=-1):
         if os.path.exists(path):
             try:
                 pygame.mixer.music.load(path)
-                pygame.mixer.music.set_volume(volume)
+                pygame.mixer.music.set_volume(volume * _vol["master"] * _vol["music"])
                 pygame.mixer.music.play(loops)
                 return
             except pygame.error as e:

@@ -1,4 +1,11 @@
 {
   "camera_index": 0,
-  "camera_name": "Camera 1"
+  "camera_name": "Camera 1",
+  "master_volume": 0.85,
+  "music_volume": 0.62,
+  "sfx_volume": 0.84,
+  "fullscreen": false,
+  "show_fps": true,
+  "screen_shake": true,
+  "pinch_sensitivity": 1
 }

@@ -1,10 +1,20 @@
+# --- Python ---
 __pycache__/
-*.pyc
+*.py[cod]
 venv/
 .venv/
-.vscode/
-.idea/
+
+# --- PyInstaller ---
 build/
 dist/
-*.exe
-*.pkg
+
+# --- Local player data ---
+src/Main/settings.json
+src/Main/records.json
+*.tmp
+
+# --- Editor / OS ---
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
