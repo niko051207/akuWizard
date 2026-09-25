@@ -433,7 +433,7 @@ Combat tuning constants (HP, mana regeneration, recognition thresholds, phase ti
   - *[8-bit damage sound](https://freesound.org/people/EVRetro/sounds/501104/)* by EVRetro via Freesound.org
 
 ### AI Assistance
-- **Code Assistance & Development Support:** Anthropic Claude, Google Gemini, and OpenAI ChatGPT
+- **Code Assistance & Development Support:** Anthropic Claude, Google Gemini, and OpenAI ChatGPT (+ poin kejujuran)
 
 
 ---
