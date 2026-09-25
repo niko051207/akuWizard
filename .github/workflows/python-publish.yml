@@ -1,0 +1,40 @@
+name: Build and Upload Executable
+
+on:
+  release:
+    types: [published] 
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14.6'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r src/Main/requirements.txt
+          pip install pyinstaller
+
+      - name: Build EXE with PyInstaller Spec
+        run: |
+          cd src/Main
+          pyinstaller --noconfirm main.spec
+
+      - name: Compress Build Output
+        run: |
+          Compress-Archive -Path src/Main/dist/* -DestinationPath akuwizard-game.zip
+
+      - name: Upload Executable to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: akuwizard-game.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
