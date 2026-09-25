@@ -5,7 +5,6 @@
 
 
 <p align="center">
-  <b>Draw your spells. Dethrone the Dark Queen.</b><br>
   A 2D boss-fight game where you cast spells by drawing gestures in the air with your hand, tracked live through a webcam.
 </p>
 
