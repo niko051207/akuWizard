@@ -1,0 +1,4 @@
+{
+  "enemy_*": {"flip": true, "fade": 0.3},
+  "enemy": {"height": 1.6, "offset": [0, 40], "orb": [-0.45, 0.4]}
+}
