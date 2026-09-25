@@ -35,7 +35,6 @@
 - [Troubleshooting](#troubleshooting)
 - [Tech Stack](#tech-stack)
 - [Credits](#credits)
-- [License](#license)
 - [Author](#author)
 
 ---
@@ -414,16 +413,11 @@ Combat tuning constants (HP, mana regeneration, recognition thresholds, phase ti
 - **Hand tracking model:** MediaPipe Hand Landmarker by Google.
 - **Font:** MedievalSharp, from Google Fonts.
 <!-- EDIT: list every third-party asset pack you used (UI kit, Dark Queen portraits/sprites, SFX, music) with the artist name, a link, and its license. Many itch.io packs require attribution. -->
-- **UI kit:** *Asset pack name* by *Artist* — *link*
-- **Dark Queen sprites and portraits:** *Asset pack name* by *Artist* — *link*
-- **Sound effects and music:** *Source* — *link*
+- **UI kit:**   
+- **Dark Queen sprites and portraits:** 
+- **Sound effects and music:** 
 
 ---
-
-## License
-
-<!-- EDIT: choose a license (MIT is a common choice for student projects), add a LICENSE file to the repo, and update this line. Third-party assets keep their own licenses. -->
-This project's source code is licensed under the MIT License. See [LICENSE](LICENSE) for details. Third-party assets remain under their respective licenses.
 
 ---
 
@@ -433,4 +427,4 @@ This project's source code is licensed under the MIT License. See [LICENSE](LICE
 Informatics Engineering, Institut Teknologi Sepuluh Nopember (ITS)
 
 <!-- EDIT: add your GitHub / LinkedIn links -->
-GitHub: [@your-username](https://github.com/your-username)
+GitHub: [@niko051207](https://github.com/niko051207)
