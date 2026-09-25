@@ -416,21 +416,21 @@ Combat tuning constants (HP, mana regeneration, recognition thresholds, phase ti
 - **Typography:** [MedievalSharp Font](https://fonts.google.com/specimen/MedievalSharp) by Google Fonts
 
 ### Visual & UI Assets
-- **UI Kit:** [MagicUI](https://assetstore.unity.com/) by ToffeeCraft *(Sesuaikan link)*
+- **UI Kit:** [MagicUI]((https://toffeecraft.itch.io/ui-user-interface-pack-magic)) by ToffeeCraft
 - **Dark Queen Sprites & Portraits:** [FREE DARK ELF QUEEN AVATAR ICON PIXEL PACK FOR DIALOGUE](https://craftpix.net/freebies/free-dark-elf-queen-avatar-icon-pixel-pack-for-dialogue/) by CraftPix.net
 
 ### Audio & Music
 - **Music:**
-  - *"Battle Epic"* by Kulakovka via [Pixabay](https://pixabay.com/music/) *(Sesuaikan link spesifik)*
+  - *"Battle Epic"* by Kulakovka via [Pixabay]((https://pixabay.com/music/main-title-battle-epic-274997/))
 - **Sound Effects:**
-  - *"20 Sword Sound Effects (Attacks And Clashes)"* by StarNinjas via [OpenGameArt.org](https://opengameart.org/) *(Sesuaikan link)*
-  - *"Magic spell cast whoosh delay"* by ryusa via [Freesound.org](https://freesound.org/)
-  - *"riot shields testudo"* by Diasyl via [Freesound.org](https://freesound.org/)
-  - *"Fanfare 2 - Rpg"* by colorsCrimsonTears via [Freesound.org](https://freesound.org/)
-  - *"explosion6"* by ReadeOnly via [Freesound.org](https://freesound.org/)
-  - *"game Over Orchestral Stinger - Cartoon Defeat"* by TommasoMotteran via [Freesound.org](https://freesound.org/)
-  - *"Magic Bass Hit"* by 1LOVE via [Freesound.org](https://freesound.org/)
-  - *"8-bit damage sound"* by EVRetro via [Freesound.org](https://freesound.org/)
+  - *"20 Sword Sound Effects (Attacks And Clashes)"* by StarNinjas via [OpenGameArt.org]((https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes)) 
+  - *"Magic spell cast whoosh delay"* by ryusa via [Freesound.org](https://freesound.org/people/ryusa/sounds/531081/)
+  - *"riot shields testudo"* by Diasyl via [Freesound.org](https://freesound.org/people/Diasyl/sounds/792354/)
+  - *"Fanfare 2 - Rpg"* by colorsCrimsonTears via [Freesound.org](https://freesound.org/people/colorsCrimsonTears/sounds/580310/)
+  - *"explosion6"* by ReadeOnly via [Freesound.org](https://freesound.org/people/ReadeOnly/sounds/186957/)
+  - *"game Over Orchestral Stinger - Cartoon Defeat"* by TommasoMotteran via [Freesound.org](https://freesound.org/people/TommasoMotteran/sounds/856516/)
+  - *"Magic Bass Hit"* by 1LOVE via [Freesound.org](https://freesound.org/people/1LOVE/sounds/711187/)
+  - *"8-bit damage sound"* by EVRetro via [Freesound.org](https://freesound.org/people/EVRetro/sounds/501104/)
 
 ### AI Assistance
 - **Code Assistance & Development Support:** Anthropic Claude, Google Gemini, and OpenAI ChatGPT
