@@ -3,7 +3,6 @@
   <img src="Assets/banner.png" alt="akuWizard banner" width="100%">
 </p>
 
-<h1 align="center">akuWizard</h1>
 
 <p align="center">
   <b>Draw your spells. Dethrone the Dark Queen.</b><br>
