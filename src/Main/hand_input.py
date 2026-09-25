@@ -194,13 +194,25 @@ def camera_names():
     return names
 
 
+def _gives_picture(cap, timeout=2.0):
+    # IR cameras (e.g. ThinkPad "Integrated IR Camera") open fine but only send
+    # black frames (a few hot pixels aside); a real camera may also start with
+    # a few black frames while warming up.
+    end = time.monotonic() + timeout
+    while time.monotonic() < end:
+        ok, frame = cap.read()
+        if ok and frame is not None and frame.mean() >= 0.5:
+            return True
+    return False
+
+
 def list_cameras(max_index=MAX_CAMERAS):
     names = camera_names()
     found = []
     for i in range(max_index):
         cap = open_camera(i)
         try:
-            ok = cap.isOpened() and cap.read()[0]
+            ok = cap.isOpened() and _gives_picture(cap)
         finally:
             cap.release()
         if ok:

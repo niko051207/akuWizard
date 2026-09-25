@@ -5,6 +5,7 @@
   "music_volume": 0.62,
   "sfx_volume": 0.84,
   "fullscreen": false,
+  "window_scale": 2,
   "show_fps": true,
   "screen_shake": true,
   "pinch_sensitivity": 1
