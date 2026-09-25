@@ -423,14 +423,14 @@ Combat tuning constants (HP, mana regeneration, recognition thresholds, phase ti
 - **Music:**
   - *"Battle Epic"* by Kulakovka via [Pixabay]((https://pixabay.com/music/main-title-battle-epic-274997/))
 - **Sound Effects:**
-  - *"[20 Sword Sound Effects (Attacks And Clashes)](https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes)"* by StarNinjas via OpenGameArt.org
-  - *"[Magic spell cast whoosh delay](https://freesound.org/people/ryusa/sounds/531081/)"* by ryusa via Freesound.org
-  - *"[riot shields testudo](https://freesound.org/people/Diasyl/sounds/792354/)"* by Diasyl via Freesound.org
-  - *"[Fanfare 2 - Rpg](https://freesound.org/people/colorsCrimsonTears/sounds/580310/)"* by colorsCrimsonTears via Freesound.org
-  - *"[explosion6](https://freesound.org/people/ReadeOnly/sounds/186957/)"* by ReadeOnly via Freesound.org
-  - *"[game Over Orchestral Stinger - Cartoon Defeat](https://freesound.org/people/TommasoMotteran/sounds/856516/)"* by TommasoMotteran via Freesound.org
-  - *"[Magic Bass Hit](https://freesound.org/people/1LOVE/sounds/711187/)"* by 1LOVE via Freesound.org
-  - *"[8-bit damage sound](https://freesound.org/people/EVRetro/sounds/501104/)"* by EVRetro via Freesound.org
+  - *[20 Sword Sound Effects (Attacks And Clashes)](https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes)* by StarNinjas via OpenGameArt.org
+  - *[Magic spell cast whoosh delay](https://freesound.org/people/ryusa/sounds/531081/)* by ryusa via Freesound.org
+  - *[riot shields testudo](https://freesound.org/people/Diasyl/sounds/792354/)* by Diasyl via Freesound.org
+  - *[Fanfare 2 - Rpg](https://freesound.org/people/colorsCrimsonTears/sounds/580310/)* by colorsCrimsonTears via Freesound.org
+  - *[explosion6](https://freesound.org/people/ReadeOnly/sounds/186957/)* by ReadeOnly via Freesound.org
+  - *[game Over Orchestral Stinger - Cartoon Defeat](https://freesound.org/people/TommasoMotteran/sounds/856516/)* by TommasoMotteran via Freesound.org
+  - *[Magic Bass Hit](https://freesound.org/people/1LOVE/sounds/711187/)* by 1LOVE via Freesound.org
+  - *[8-bit damage sound](https://freesound.org/people/EVRetro/sounds/501104/)* by EVRetro via Freesound.org
 
 ### AI Assistance
 - **Code Assistance & Development Support:** Anthropic Claude, Google Gemini, and OpenAI ChatGPT
