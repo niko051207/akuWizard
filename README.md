@@ -423,7 +423,7 @@ Combat tuning constants (HP, mana regeneration, recognition thresholds, phase ti
 - **Music:**
   - *"Battle Epic"* by Kulakovka via [Pixabay]((https://pixabay.com/music/main-title-battle-epic-274997/))
 - **Sound Effects:**
-  - *"20 Sword Sound Effects (Attacks And Clashes)"* by StarNinjas via [OpenGameArt.org]((https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes)) 
+  - *"20 Sword Sound Effects (Attacks And Clashes)"* by StarNinjas via [OpenGameArt.org](https://opengameart.org/content/20-sword-sound-effects-attacks-and-clashes)
   - *"Magic spell cast whoosh delay"* by ryusa via [Freesound.org](https://freesound.org/people/ryusa/sounds/531081/)
   - *"riot shields testudo"* by Diasyl via [Freesound.org](https://freesound.org/people/Diasyl/sounds/792354/)
   - *"Fanfare 2 - Rpg"* by colorsCrimsonTears via [Freesound.org](https://freesound.org/people/colorsCrimsonTears/sounds/580310/)
