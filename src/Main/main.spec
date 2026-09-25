@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files
 
-datas = [('hand_landmarker.task', '.'), ('spells.json', '.'), ('assets', 'assets')]
+datas = [('hand_landmarker.task', '.'), ('spells.json', '.'), ('settings.json', '.'), ('records.json', '.'), ('assets', 'assets')]
 datas += collect_data_files('mediapipe')
 
 a = Analysis(
