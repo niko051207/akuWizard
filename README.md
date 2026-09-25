@@ -409,13 +409,31 @@ Combat tuning constants (HP, mana regeneration, recognition thresholds, phase ti
 
 ## Credits
 
-- **Gesture recognition:** based on the $P Point-Cloud Recognizer by Radu-Daniel Vatavu, Lisa Anthony, and Jacob O. Wobbrock (ICMI 2012).
-- **Hand tracking model:** MediaPipe Hand Landmarker by Google.
-- **Font:** MedievalSharp, from Google Fonts.
-<!-- EDIT: list every third-party asset pack you used (UI kit, Dark Queen portraits/sprites, SFX, music) with the artist name, a link, and its license. Many itch.io packs require attribution. -->
-- **UI kit:**   
-- **Dark Queen sprites and portraits:** 
-- **Sound effects and music:** 
+
+### Core Technologies & Libraries
+- **Gesture Recognition:** [$P Point-Cloud Recognizer](https://depts.washington.edu/madlab/proj/dollar/pdollar.html) by Radu-Daniel Vatavu, Lisa Anthony, and Jacob O. Wobbrock (ICMI 2012)
+- **Hand Tracking Model:** [MediaPipe Hand Landmarker](https://developers.google.com/mediapipe/solutions/vision/hand_landmarker) by Google
+- **Typography:** [MedievalSharp Font](https://fonts.google.com/specimen/MedievalSharp) by Google Fonts
+
+### Visual & UI Assets
+- **UI Kit:** [MagicUI](https://assetstore.unity.com/) by ToffeeCraft *(Sesuaikan link)*
+- **Dark Queen Sprites & Portraits:** [FREE DARK ELF QUEEN AVATAR ICON PIXEL PACK FOR DIALOGUE](https://craftpix.net/freebies/free-dark-elf-queen-avatar-icon-pixel-pack-for-dialogue/) by CraftPix.net
+
+### Audio & Music
+- **Music:**
+  - *"Battle Epic"* by Kulakovka via [Pixabay](https://pixabay.com/music/) *(Sesuaikan link spesifik)*
+- **Sound Effects:**
+  - *"20 Sword Sound Effects (Attacks And Clashes)"* by StarNinjas via [OpenGameArt.org](https://opengameart.org/) *(Sesuaikan link)*
+  - *"Magic spell cast whoosh delay"* by ryusa via [Freesound.org](https://freesound.org/)
+  - *"riot shields testudo"* by Diasyl via [Freesound.org](https://freesound.org/)
+  - *"Fanfare 2 - Rpg"* by colorsCrimsonTears via [Freesound.org](https://freesound.org/)
+  - *"explosion6"* by ReadeOnly via [Freesound.org](https://freesound.org/)
+  - *"game Over Orchestral Stinger - Cartoon Defeat"* by TommasoMotteran via [Freesound.org](https://freesound.org/)
+  - *"Magic Bass Hit"* by 1LOVE via [Freesound.org](https://freesound.org/)
+  - *"8-bit damage sound"* by EVRetro via [Freesound.org](https://freesound.org/)
+
+### AI Assistance
+- **Code Assistance & Development Support:** Anthropic Claude, Google Gemini, and OpenAI ChatGPT
 
 ---
 
