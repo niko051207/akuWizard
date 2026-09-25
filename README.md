@@ -1,14 +1,6 @@
-<!--
-  IMAGE NOTE
-  All README images live in docs/images/ (create this folder in the repo root).
-  Do NOT put them in assets/ — that folder is bundled into the .exe by main.spec,
-  so screenshots there would bloat the build.
-  Replace each file below with your own capture; keep the same file names or update the paths.
--->
-
 <p align="center">
-  <!-- IMAGE: docs/images/banner.png — game logo / title art, about 1280x400 -->
-  <img src="docs/images/banner.png" alt="akuWizard banner" width="100%">
+  <!-- IMAGE: Assets/banner.png — game logo / title art, about 1280x400 -->
+  <img src="Assets/banner.png" alt="akuWizard banner" width="100%">
 </p>
 
 <h1 align="center">akuWizard</h1>
@@ -57,8 +49,8 @@
 The project combines real-time hand tracking (MediaPipe), gesture recognition (the $P point-cloud recognizer), and a pygame-based combat system with phases, counters, parries, and enemy wards.
 
 <p align="center">
-  <!-- IMAGE: docs/images/gameplay.gif — 5 to 10 second clip of drawing a spell and hitting the queen. A GIF works best here. -->
-  <img src="docs/images/gameplay.gif" alt="Gameplay demo" width="80%">
+  <!-- IMAGE: Assets/gameplay.gif — 5 to 10 second clip of drawing a spell and hitting the queen. A GIF works best here. -->
+  <img src="Assets/gameplay.gif" alt="Gameplay demo" width="80%">
 </p>
 
 ---
@@ -74,11 +66,11 @@ The project combines real-time hand tracking (MediaPipe), gesture recognition (t
 Accuracy matters. Damage is scaled by how closely your drawing matches the recorded gesture, and drawing the sigil larger gives a small bonus (up to 1.3x). A sloppy or ambiguous drawing fizzles instead of casting.
 
 <p align="center">
-  <!-- IMAGE: docs/images/screenshot_battle.png — mid-fight screenshot showing HUD, spell list, boss bar -->
-  <img src="docs/images/screenshot_battle.png" alt="Battle screen" width="48%">
+  <!-- IMAGE: Assets/screenshot_battle.png — mid-fight screenshot showing HUD, spell list, boss bar -->
+  <img src="Assets/screenshot_battle.png" alt="Battle screen" width="48%">
   &nbsp;
-  <!-- IMAGE: docs/images/screenshot_howto.png — the HOW TO PLAY screen with spell cards -->
-  <img src="docs/images/screenshot_howto.png" alt="How to play screen" width="48%">
+  <!-- IMAGE: Assets/screenshot_howto.png — the HOW TO PLAY screen with spell cards -->
+  <img src="Assets/screenshot_howto.png" alt="How to play screen" width="48%">
 </p>
 
 ---
@@ -113,8 +105,8 @@ The default `spells.json` ships with the following spells:
 | **Shield** | Defense | – | 15 | **Parry**: blocks for 1.5 s; cast within 0.35 s of impact to reflect the shot at 2x damage |
 
 <p align="center">
-  <!-- IMAGE: docs/images/spell_gestures.png — the gesture shapes for each spell (e.g. a crop of the HOW TO PLAY cards) -->
-  <img src="docs/images/spell_gestures.png" alt="Spell gestures" width="80%">
+  <!-- IMAGE: Assets/spell_gestures.png — the gesture shapes for each spell (e.g. a crop of the HOW TO PLAY cards) -->
+  <img src="Assets/spell_gestures.png" alt="Spell gestures" width="80%">
 </p>
 
 The green dot on each card in the in-game **HOW TO PLAY** screen marks where the gesture starts, and the arrow shows the direction to draw.
@@ -136,15 +128,15 @@ The boss has 1000 HP and fights in three phases:
 Watch for the **CHARGING** tag under the queen: that is your window to interrupt her with Lightning Bolt. When a violet hexagon ward appears, only an interrupt spell can break it.
 
 <p align="center">
-  <!-- IMAGE: docs/images/screenshot_phases.png — the queen charging, warded, or in phase III -->
-  <img src="docs/images/screenshot_phases.png" alt="Boss phases" width="70%">
+  <!-- IMAGE: Assets/screenshot_phases.png — the queen charging, warded, or in phase III -->
+  <img src="Assets/screenshot_phases.png" alt="Boss phases" width="70%">
 </p>
 
 At the end of each fight a summary screen shows your time, spells cast, average accuracy, damage taken, and the number of interrupts, parries, and counters.
 
 <p align="center">
-  <!-- IMAGE: docs/images/screenshot_victory.png — the VICTORY or DEFEAT summary screen -->
-  <img src="docs/images/screenshot_victory.png" alt="End screen" width="60%">
+  <!-- IMAGE: Assets/screenshot_victory.png — the VICTORY or DEFEAT summary screen -->
+  <img src="Assets/screenshot_victory.png" alt="End screen" width="60%">
 </p>
 
 ---
@@ -187,7 +179,7 @@ If your hand leaves the camera while drawing, the stroke is cancelled rather tha
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/akuWizard.git
+git clone https://github.com/niko051207/akuWizard.git
 cd akuWizard
 ```
 
@@ -224,7 +216,7 @@ The game uses MediaPipe's Hand Landmarker model. Download `hand_landmarker.task`
 curl -L -o hand_landmarker.task https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/latest/hand_landmarker.task
 ```
 
-On Windows, open the URL above in a browser and save the file into the project folder.
+On Windows, the 'hand_landmarker.task' aready included in the 'main' folder.
 
 ### 5. Run the game
 
@@ -267,8 +259,8 @@ python record_spells.py Fireball --camera 2
 Record **8 to 12 samples** per spell, varying size and speed slightly, for reliable recognition.
 
 <p align="center">
-  <!-- IMAGE: docs/images/screenshot_recorder.png — record_spells.py window with a saved stroke in green -->
-  <img src="docs/images/screenshot_recorder.png" alt="Spell recorder" width="60%">
+  <!-- IMAGE: Assets/screenshot_recorder.png — record_spells.py window with a saved stroke in green -->
+  <img src="Assets/screenshot_recorder.png" alt="Spell recorder" width="60%">
 </p>
 
 ### Testing recognition quality
