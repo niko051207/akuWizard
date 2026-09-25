@@ -1,8 +1,0 @@
-pygame-ce>=2.5.0
-opencv-python>=4.8.0
-mediapipe>=0.10.0
-dollarpy>=0.1.1
-numpy
-pillow
-matplotlib
-sounddevice
